@@ -1,7 +1,8 @@
 flask
-numpy<2.0
-opencv-python-headless
+flask-cors
 streamlit
+opencv-python-headless
 google-cloud-vision
 reportlab
 Pillow
+numpy<2.0
