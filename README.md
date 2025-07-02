@@ -1,12 +1,36 @@
-# React + Vite
+# Readixer_OCR
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project includes both a frontend built with React + Vite and a backend using Python + Streamlit to perform OCR (Optical Character Recognition) on handwritten documents using the Google Vision API.
 
-Currently, two official plugins are available:
+## 🧠 Backend Features (Streamlit + Google Vision)
+- Secure OCR processing with Google Cloud Vision
+- Reads credentials from environment variable (`GCLOUD_CREDENTIALS_BASE64`)
+- Generates clean PDF from extracted text
+- Accepts uploaded handwritten images
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚛️ Frontend Features (React + Vite)
+This frontend uses a minimal setup to get React working with Vite and Hot Module Reloading (HMR), plus some ESLint rules.
 
-## Expanding the ESLint configuration
+Currently, two official plugins are supported:
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+If you're expanding the ESLint configuration for a production application, consider using TypeScript and `typescript-eslint`. See [this TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for integration guidance.
+
+---
+
+## 🚀 Deployment
+Deployed securely on Render using environment variables (no credentials committed).
+
+---
+
+## 🔒 Security
+The Google service account key is **never stored in the repo** and is loaded securely from an environment variable on the server.
+
+---
+
+## 📦 Tech Stack
+- Streamlit (Python)
+- Google Vision API
+- React + Vite
+- Node.js
