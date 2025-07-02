@@ -1,5 +1,6 @@
-Flask==3.0.2
-flask-cors==4.0.0
-opencv-python-headless==4.10.0.82
-google-cloud-vision==3.7.2
-reportlab==4.1.0
+numpy<2.0
+opencv-python-headless
+streamlit
+google-cloud-vision
+reportlab
+Pillow
