@@ -1,8 +1,9 @@
-flask
+Flask
 flask-cors
-streamlit
 opencv-python-headless
-google-cloud-vision
+numpy<2
 reportlab
-Pillow
-numpy<2.0
+google-cloud-vision
+google-auth
+google-auth-oauthlib
+PyPDF2

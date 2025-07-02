@@ -1,27 +1,35 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 import os
+import json
 import cv2
 import numpy as np
 from google.cloud import vision
+from google.oauth2 import service_account
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_JUSTIFY
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from datetime import datetime
+
+# === Summarizer import ===
+from summarizer import extract_text_from_pdf, extractive_summary, save_summary_as_pdf
 
 app = Flask(__name__)
 CORS(app)
 
-# Set the path to your Google Vision API key JSON
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'handwrittenpersonal-ee760a4396bf.json'
+# === Google Vision API: Secure credentials from environment ===
+creds_json = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+if creds_json:
+    creds_dict = json.loads(creds_json)
+    client = vision.ImageAnnotatorClient(
+        credentials=service_account.Credentials.from_service_account_info(creds_dict)
+    )
+else:
+    raise EnvironmentError("Missing GOOGLE_APPLICATION_CREDENTIALS_JSON environment variable")
 
-# Register font (ensure 'times.ttf' is in your project folder)
-pdfmetrics.registerFont(TTFont('Times-Roman', 'times.ttf'))
-
+# === Handwriting Conversion ===
 def preprocess_image(image_path):
     image = cv2.imread(image_path)
     if image is None:
@@ -36,7 +44,6 @@ def preprocess_image(image_path):
     return preprocessed_path
 
 def recognize_text(image_path):
-    client = vision.ImageAnnotatorClient()
     with open(image_path, 'rb') as image_file:
         content = image_file.read()
     image = vision.Image(content=content)
@@ -81,13 +88,30 @@ def upload():
         text = recognize_text(preprocessed_path)
         generate_pdf(text)
 
-        # Clean up
-        if os.path.exists(preprocessed_path):
-            os.remove(preprocessed_path)
-        if os.path.exists(input_path):
-            os.remove(input_path)
+        os.remove(preprocessed_path)
+        os.remove(input_path)
 
         return send_file("handwritten_output.pdf", as_attachment=True)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# === Document Summarization ===
+@app.route("/summarize", methods=["POST"])
+def summarize():
+    try:
+        file = request.files["file"]
+        topic = request.form.get("topic")  # Get topic if provided
+        input_path = "temp_input.pdf"
+        file.save(input_path)
+
+        text = extract_text_from_pdf(input_path)
+        summary = extractive_summary(text, max_sentences=7, topic=topic)
+        output_path = "summary_" + os.path.splitext(file.filename)[0] + ".pdf"
+        final_path = save_summary_as_pdf(summary, output_path)
+
+        os.remove(input_path)
+        return send_file(final_path, as_attachment=True)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
