@@ -1,0 +1,6 @@
+*.json
+__pycache__/
+.env
+creds.txt
+credentials.json
+handwrittenpersonal-ee760a4396bf.json
